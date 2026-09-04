@@ -23,7 +23,7 @@ let ysdk = null;
                 autoCenter: Phaser.Scale.CENTER_BOTH,
             },
             parent: 'game-container',
-            scene: [mainMenu],
+            scene: [mainMenu, gameWindow],
         };
     
     game = new Phaser.Game(config);
