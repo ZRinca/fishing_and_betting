@@ -1,0 +1,3 @@
+function replacedText(lang) {
+    return "";
+}
