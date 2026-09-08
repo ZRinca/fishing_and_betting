@@ -18,8 +18,8 @@ let ysdk = null;
             type: Phaser.AUTO,
             scale: {
                 mode: Phaser.Scale.EXACT_FIT,
-                width: 800,
-                height: 600,
+                width: 1920,
+                height: 1080,
                 autoCenter: Phaser.Scale.CENTER_BOTH,
             },
             parent: 'game-container',
