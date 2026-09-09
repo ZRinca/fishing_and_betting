@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <link rel="stylesheet" href="style/style.css">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
         <!-- <title id="name_game">Змейка</title> -->
@@ -19,8 +20,32 @@
         <script src="window_game/settings-window.js"></script>
         <!-- --------------- -->
 
+        <!-- bd -->
+        <script src="bd/fish_item.js"></script> 
+        <!-- -- -->
+
         <script src="lang/lang-translate.js"></script>
         <script src="scripts/replace-text.js"></script>
         <script src="__init__.js"></script>
     </head>
+
+    <body>
+        <div style="display: none;" class="table-back">    
+            <button onclick="clousedWindow()" class="close-btn" id="closeFishTable">×</button>
+            <table id="tableFishItem">
+                <thead>
+                    <tr>
+                        <th>img</th>
+                        <th>name_fish</th>
+                        <th>lvl</th>
+                    </tr>    
+                </thead>
+                <tbody id="tableFishItemBody">
+                </tbody>
+            </table>
+        </div>
+    </body>
+
+    <script src="scripts/create-table.js"></script>
+
 </html>

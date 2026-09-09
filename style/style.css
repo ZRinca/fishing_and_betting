@@ -1,0 +1,100 @@
+    /* Контейнер таблицы */
+    .table-back {
+        position: fixed;
+        z-index: 999;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);   /* центрирование */
+        width: 90%;                         /* адаптивная ширина */
+        max-width: 600px;
+        max-height: 80vh;
+        overflow: auto;
+        background: #fff;                   /* белый фон вместо золотого (или оставьте gold) */
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        padding: 20px;
+        font-family: 'Segoe UI', Arial, sans-serif;
+    }
+
+    /* Сама таблица */
+    #tableFishItem {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+        text-align: left;
+    }
+
+    /* Заголовки */
+    #tableFishItem thead tr {
+        background: #f5f7fa;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    #tableFishItem th {
+        padding: 12px 10px;
+        font-weight: 600;
+        color: #2d3748;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 12px;
+    }
+
+    /* Ячейки */
+    #tableFishItem td {
+        padding: 10px 10px;
+        border-bottom: 1px solid #edf2f7;
+        vertical-align: middle;
+    }
+
+    /* Чередование строк (zebra) */
+    #tableFishItem tbody tr:nth-child(even) {
+        background-color: #f9fafc;
+    }
+
+    /* Картинки внутри таблицы */
+    #tableFishItem td img {
+        width: 40px;
+        height: 40px;
+        object-fit: contain;
+        border-radius: 8px;
+        background: #f1f5f9;
+        padding: 4px;
+        display: block;
+    }
+
+    /* Статус – можно сделать цветные индикаторы */
+    #tableFishItem td:last-child {
+        font-weight: 500;
+        color: #48bb78;  /* зелёный для "активно" */
+    }
+
+    /* Стиль для прокрутки (скроллбар) */
+    .table-back::-webkit-scrollbar {
+        width: 6px;
+    }
+    .table-back::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    .table-back::-webkit-scrollbar-thumb {
+        background: #cbd5e0;
+        border-radius: 10px;
+    }
+    .table-back::-webkit-scrollbar-thumb:hover {
+        background: #a0aec0;
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 28px;
+        font-weight: 300;
+        color: #888;
+        background: none;
+        border: none;
+        cursor: pointer;
+        transition: color 0.2s;
+        line-height: 1;
+        padding: 0 5px;
+    }
