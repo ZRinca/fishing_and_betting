@@ -20,6 +20,9 @@ class gameWindow extends Phaser.Scene {
         };
         this.wheelStartTime = 0;
         this.wheelSpinning = false;
+        this.isFishing = false;
+        this.barX = 0;
+        this.barWidth = 600;
     }
 
     buttonStyles(button, label) {
@@ -51,7 +54,7 @@ class gameWindow extends Phaser.Scene {
         this.load.image('wheelx01', 'assets/img/wheel/betting_x0_1.png');
         this.load.image('wheelx02', 'assets/img/wheel/betting_x0_2.png');
         this.load.image('wheelx03', 'assets/img/wheel/betting_x0_3.png');
-        this.load.image('wheelx2', 'assets/img/wheel/betting_x3.png');
+        this.load.image('wheelx2', 'assets/img/wheel/betting_x2.png');
         this.load.image('wheelx3', 'assets/img/wheel/betting_x3.png');
         this.load.image('wheelx20', 'assets/img/wheel/betting_x20.png');
 
@@ -99,7 +102,6 @@ class gameWindow extends Phaser.Scene {
         this.buttonStyles(this.menu, this.labelMenu);
 
         this.menu.on('pointerdown', () => {
-            // fishing.setScale(0.95);
             this.scene.start('mainMenu');
 
         });
@@ -131,8 +133,6 @@ class gameWindow extends Phaser.Scene {
         this.buttonStyles(this.betting, this.labelBetting);
 
         this.betting.on('pointerdown', () => {
-            // fishing.setScale(0.95);
-            // this.scene.start('settings')
             this.wheelTween.restart();
             this.wheelTween.resume();
             this.wheelSpinning = true;
@@ -152,9 +152,6 @@ class gameWindow extends Phaser.Scene {
             ease: 'Linear',
             paused: true
         });
-        // this.wheelTween.stop();
-
-        // this.wheel.play("wheelAnim");
 
         this.fishing = this.add.sprite(640, 450, 'roundBtn').setInteractive({ useHandCursor: true });
         this.labelfishing = this.add.text(640, 450, 'Ловля рыбы', this.styleLabel).setOrigin(0.5).setDepth(1);
@@ -163,15 +160,88 @@ class gameWindow extends Phaser.Scene {
 
         this.fishing.on('pointerdown', () => {
             this.player.setTexture("make");
-            // this.player.flipx(true);
-            // fishing.setScale(0.95);
-            // this.scene.start('settings')
+            this.startFishing();
+        });
+    }
+
+    startFishing() {
+        if (this.isFishing) return;
+        this.isFishing = true;
+
+        const camW = this.cameras.main.width;
+        const camH = this.cameras.main.height;
+
+        this.barWidth = Math.min(600, camW * 0.8);
+        this.barX = camW / 2 - this.barWidth / 2;
+        const barY = camH / 2 - 60;
+        const barHeight = 40;
+
+        // Фон полосы
+        this.barBg = this.add.rectangle(this.barX, barY, this.barWidth, barHeight, 0x222222)
+            .setOrigin(0, 0.5).setDepth(200).setStrokeStyle(2, 0xffffff);
+
+        // Красная зона
+        const zoneStart = Phaser.Math.FloatBetween(0.1, 0.6);
+        const zoneWidth = Phaser.Math.FloatBetween(0.15, 0.3);
+        this.zoneStart = zoneStart;
+        this.zoneEnd = zoneStart + zoneWidth;
+
+        const zoneX = this.barX + this.barWidth * zoneStart;
+        const zoneW = this.barWidth * zoneWidth;
+
+        this.zoneRect = this.add.rectangle(zoneX, barY, zoneW, barHeight, 0xff3344)
+            .setOrigin(0, 0.5).setDepth(201);
+
+        // Маркер
+        this.marker = this.add.rectangle(this.barX, barY, 6, barHeight, 0xffffff)
+            .setOrigin(0.5, 0.5).setDepth(202);
+
+        // Движение маркера
+        this.markerTween = this.tweens.add({
+            targets: this.marker,
+            x: this.barX + this.barWidth,
+            duration: 1000,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
         });
 
+        // КНОПКА «Поймать рыбу»
+        this.catchBtn = this.add.sprite(camW / 2, barY + 120, 'roundBtn')
+            .setInteractive({ useHandCursor: true })
+            .setDepth(203);
 
-        // const button = this.add.sprite(400, 300, "buttonBackMainMenu").setInteractive({ useHandCursor: true });;
-        // button.on("pointerover", ()=>{button.setScale(1.1)});
-        // button.on("pointerdown", ()=>{console.log('Новое окно')});
+        this.catchLabel = this.add.text(camW / 2, barY + 120, 'Поймать!', this.styleLabel)
+            .setOrigin(0.5).setDepth(204);
+
+        this.buttonStyles(this.catchBtn, this.catchLabel);
+
+        this.catchBtn.on('pointerdown', () => this.checkHit());
+    }
+    checkHit() {
+        if (!this.isFishing) return;
+
+        const pos = (this.marker.x - this.barX) / this.barWidth;
+        const hit = pos >= this.zoneStart && pos <= this.zoneEnd;
+
+        // Очистка
+        this.markerTween.stop();
+        this.barBg.destroy();
+        this.zoneRect.destroy();
+        this.marker.destroy();
+        this.catchBtn.destroy();
+        this.catchLabel.destroy();
+        this.isFishing = false;
+
+        this.showMessage(hit ? 'Молодец!' : 'Мимо');
+    }
+    showMessage(text) {
+        const msg = this.add.text(
+            this.cameras.main.width / 2, 200, text,
+            { fontSize: '48px', color: '#ffffff', fontStyle: 'bold', stroke: '#000', strokeThickness: 4 }
+        ).setOrigin(0.5).setDepth(300);
+
+        this.time.delayedCall(1000, () => msg.destroy());
     }
 
     visibleItemShop(bool) {
