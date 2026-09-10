@@ -18,6 +18,8 @@ class gameWindow extends Phaser.Scene {
                 fill: true
             }
         };
+        this.wheelStartTime = 0;
+        this.wheelSpinning = false;
     }
 
     buttonStyles(button, label) {
@@ -44,7 +46,14 @@ class gameWindow extends Phaser.Scene {
         this.load.image('make', 'assets/img/player/3.png');
 
         // wheel
-        this.load.image('wheel', 'assets/img/wheel/betting.png')
+        this.load.image('wheel', 'assets/img/wheel/betting.png');
+
+        this.load.image('wheelx01', 'assets/img/wheel/betting_x0_1.png');
+        this.load.image('wheelx02', 'assets/img/wheel/betting_x0_2.png');
+        this.load.image('wheelx03', 'assets/img/wheel/betting_x0_3.png');
+        this.load.image('wheelx2', 'assets/img/wheel/betting_x3.png');
+        this.load.image('wheelx3', 'assets/img/wheel/betting_x3.png');
+        this.load.image('wheelx20', 'assets/img/wheel/betting_x20.png');
 
         // comtroller
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -91,7 +100,8 @@ class gameWindow extends Phaser.Scene {
 
         this.menu.on('pointerdown', () => {
             // fishing.setScale(0.95);
-            this.scene.start('mainMenu')
+            this.scene.start('mainMenu');
+
         });
 
         this.inventory = this.add.sprite(centerX, 190, 'roundBtn').setInteractive({ useHandCursor: true });
@@ -123,7 +133,11 @@ class gameWindow extends Phaser.Scene {
         this.betting.on('pointerdown', () => {
             // fishing.setScale(0.95);
             // this.scene.start('settings')
-            this.wheelTween.stop();
+            this.wheelTween.restart();
+            this.wheelTween.resume();
+            this.wheelSpinning = true;
+            this.wheelStartTime = this.time.now + 850;
+
         });
 
         this.wheel = this.add.sprite(centerX, centerY, "wheel");
@@ -135,8 +149,10 @@ class gameWindow extends Phaser.Scene {
             angle: 360,
             duration: 200,
             repeat: -1,
-            ease: 'Linear'
+            ease: 'Linear',
+            paused: true
         });
+        // this.wheelTween.stop();
 
         // this.wheel.play("wheelAnim");
 
@@ -158,21 +174,49 @@ class gameWindow extends Phaser.Scene {
         // button.on("pointerdown", ()=>{console.log('Новое окно')});
     }
 
+    visibleItemShop(bool) {
+        this.pay.setVisible(bool);
+        this.labelPay.setVisible(bool);
+        this.betting.setVisible(bool);
+        this.labelBetting.setVisible(bool);
+        this.wheel.setVisible(bool);   
+    }
+
     update() {
+
+        if (this.wheelStartTime < this.time.now && this.wheelSpinning) {
+            this.wheelTween.pause();
+            this.wheelSpinning = false;
+            this.wheel.angle = 0;
+
+            let textures = 'wheelx01';
+            let random = Math.random();
+            
+            if (random > 0 && random < 0.3) {
+                textures = 'wheelx01';   
+            }
+            if (random > 0.3 && random < 0.5) {
+                textures = 'wheelx02';   
+            }
+            if (random > 0.5 && random < 0.8) {
+                textures = 'wheelx02';   
+            }
+            if (random > 0.8 && random < 0.9) {
+                textures = 'wheelx2';   
+            }
+            if (random > 0.9 && random < 1) {
+                textures = "wheelx3";  
+            }
+
+            this.wheel.setTexture(textures);
+
+        }
 
         // buttons
         if (this.player.x > 1600 && this.player.x < 1800) {
-            this.pay.setVisible(true);
-            this.labelPay.setVisible(true);
-            this.betting.setVisible(true);
-            this.labelBetting.setVisible(true);
-            this.wheel.setVisible(true);
+            this.visibleItemShop(true);
         } else {
-            this.pay.setVisible(false);
-            this.labelPay.setVisible(false);
-            this.betting.setVisible(false);
-            this.labelBetting.setVisible(false);
-            this.wheel.setVisible(false);
+            this.visibleItemShop(false);
         };
 
         if (this.player.x > 500 && this.player.x < 750) {
